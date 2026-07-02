@@ -139,6 +139,16 @@ npm run build
 
 ---
 
+## 👥 Contributors & Acknowledgement
+
+### Contributors
+*   **Jatin Pandey** ([@satiricalguru](https://github.com/satiricalguru)) — Project lead, core developer, and UI designer.
+
+### Acknowledgement
+*   This project builds on top of and acknowledges the outstanding open-source work of [IAHispano/Applio](https://github.com/IAHispano/Applio.git) which provided the foundation for RVC voice inference structures and configurations.
+
+---
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
