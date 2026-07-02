@@ -17,14 +17,18 @@
     "mac": {
       "target": "dmg",
       "category": "public.app-category.music",
-      "icon": "assets/icon.icns"
+      "icon": "assets/icon.icns",
+      "identity": null
     },
     "directories": {
       "output": "dist"
     },
     "files": [
       "electron/**/*",
-      "app/**/*"
+      "app/**/*",
+      ".venv/**/*",
+      "requirements.txt",
+      "main.py"
     ]
   },
   "keywords": ["voice-changer", "rvc", "electron", "ai", "audio"],

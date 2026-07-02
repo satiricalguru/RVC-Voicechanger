@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Setting up RVC Voicechanger</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #0d0d1a, #040408);
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .container {
+      width: 500px;
+      padding: 40px;
+      background: rgba(15, 15, 25, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 40px rgba(139, 92, 246, 0.05);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .logo-container {
+      position: relative;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-glow {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.35) 0%, transparent 70%);
+      filter: blur(8px);
+      animation: pulse 3s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.4); opacity: 1; }
+    }
+
+    .logo-svg {
+      width: 48px;
+      height: 48px;
+      fill: none;
+      stroke: #a78bfa;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #f8fafc, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .progress-section {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7c3aed, #3b82f6);
+      box-shadow: 0 0 12px rgba(124, 58, 237, 0.4);
+      border-radius: 10px;
+      transition: width 0.3s cubic-bezier(0.1, 0.8, 0.25, 1);
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: #e2e8f0;
+      padding: 0 2px;
+    }
+
+    .status-text {
+      color: #a78bfa;
+      max-width: 75%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: left;
+    }
+
+    .percentage-text {
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
+    .stats-section {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 10px;
+      padding: 0 2px;
+    }
+
+    .error-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 12.5px;
+      color: #f87171;
+      width: 100%;
+      margin-top: 10px;
+      display: none;
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .retry-btn {
+      margin-top: 20px;
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      display: none;
+    }
+
+    .retry-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+    }
+
+    .retry-btn:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-container">
+        <div class="logo-glow"></div>
+        <svg class="logo-svg" viewBox="0 0 24 24">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+          <path d="M12 19v3" />
+        </svg>
+      </div>
+      <h1>Setting up RVC Voicechanger</h1>
+      <div class="subtitle" id="subtitle-msg">Initializing download process...</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-info">
+        <div class="status-text" id="status-text">Preparing...</div>
+        <div class="percentage-text" id="percentage-text">0%</div>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <div id="downloaded-size">-- / --</div>
+      <div id="download-speed">-- KB/s</div>
+    </div>
+
+    <div class="error-box" id="error-box"></div>
+    <button class="retry-btn" id="retry-btn">Retry Setup</button>
+  </div>
+
+  <script>
+    const progressFill = document.getElementById('progress-fill');
+    const statusText = document.getElementById('status-text');
+    const percentageText = document.getElementById('percentage-text');
+    const downloadedSize = document.getElementById('downloaded-size');
+    const downloadSpeed = document.getElementById('download-speed');
+    const subtitleMsg = document.getElementById('subtitle-msg');
+    const errorBox = document.getElementById('error-box');
+    const retryBtn = document.getElementById('retry-btn');
+
+    window.onload = () => {
+      window.electronAPI.startDownload();
+    };
+
+    window.electronAPI.onDownloadProgress((data) => {
+      const pct = Math.round(data.percent * 100);
+      progressFill.style.width = `${pct}%`;
+      percentageText.innerText = `${pct}%`;
+
+      if (data.downloaded && data.total) {
+        const dMB = (data.downloaded / 1024 / 1024).toFixed(1);
+        const tMB = (data.total / 1024 / 1024).toFixed(1);
+        downloadedSize.innerText = `${dMB} MB / ${tMB} MB`;
+      }
+      if (data.speed) {
+        const sMB = (data.speed / 1024 / 1024).toFixed(1);
+        downloadSpeed.innerText = `${sMB} MB/s`;
+      }
+    });
+
+    window.electronAPI.onDownloadStatus((status) => {
+      statusText.innerText = status;
+      if (status.includes('Extracting')) {
+        subtitleMsg.innerText = 'This may take a minute. Please do not close the app.';
+        downloadedSize.innerText = 'Unzipping models...';
+        downloadSpeed.innerText = '';
+        progressFill.style.width = '100%';
+        percentageText.innerText = '99%';
+      } else {
+        subtitleMsg.innerText = 'Setting up voice models. This only happens on first launch.';
+      }
+    });
+
+    window.electronAPI.onDownloadError((err) => {
+      errorBox.style.display = 'block';
+      errorBox.innerText = `Setup Error: ${err}. Please check your internet connection.`;
+      retryBtn.style.display = 'block';
+      statusText.innerText = 'Failed';
+      percentageText.innerText = '--%';
+    });
+
+    retryBtn.onclick = () => {
+      errorBox.style.display = 'none';
+      retryBtn.style.display = 'none';
+      statusText.innerText = 'Re-initializing...';
+      percentageText.innerText = '0%';
+      progressFill.style.width = '0%';
+      window.electronAPI.startDownload();
+    };
+  </script>
+</body>
+</html>

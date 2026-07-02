@@ -24,8 +24,10 @@ const {
 
 const path    = require('path');
 const net     = require('net');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const fs      = require('fs');
+const os      = require('os');
+const https   = require('https');
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const APP_ROOT    = path.join(__dirname, '..');
@@ -45,6 +47,7 @@ let backendPort  = null;
 let isQuitting   = false;
 let restartCount = 0;
 const MAX_RESTARTS = 5;
+let downloaderCompleted = false;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function getFreePort() {
@@ -361,6 +364,247 @@ function registerIPC() {
 
   ipcMain.handle('app:getBackendPort', () => backendPort);
   ipcMain.handle('app:hideToTray', () => mainWindow?.hide());
+
+  ipcMain.on('download:start', async () => {
+    try {
+      await runSetupDownloads();
+      if (downloaderWindow) {
+        downloaderCompleted = true; // Set flag so closed handler doesn't quit the app
+        downloaderWindow.webContents.send('download:success');
+        setTimeout(() => {
+          if (downloaderWindow) {
+            downloaderWindow.close();
+          }
+          launchAppFlow().catch(handleStartupError);
+        }, 1000);
+      }
+    } catch (err) {
+      console.error('[electron] Setup download failed:', err);
+      if (downloaderWindow) {
+        downloaderWindow.webContents.send('download:error', err.message);
+      }
+    }
+  });
+}
+
+function areModelsMissing() {
+  const defaultDir = path.join(APP_ROOT, 'models', 'default');
+  if (!fs.existsSync(defaultDir)) {
+    fs.mkdirSync(defaultDir, { recursive: true });
+    return true;
+  }
+  
+  function hasPth(dir) {
+    try {
+      const files = fs.readdirSync(dir);
+      for (const f of files) {
+        const full = path.join(dir, f);
+        const stat = fs.statSync(full);
+        if (stat.isDirectory()) {
+          if (hasPth(full)) return true;
+        } else if (f.endsWith('.pth')) {
+          return true;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return false;
+  }
+  
+  return !hasPth(defaultDir);
+}
+
+let downloaderWindow = null;
+
+function showDownloaderWindow() {
+  downloaderWindow = new BrowserWindow({
+    width: 550,
+    height: 380,
+    resizable: false,
+    frame: false,
+    hasShadow: true,
+    backgroundColor: '#0a0a0f',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    }
+  });
+
+  downloaderWindow.loadFile(path.join(__dirname, 'downloader.html'));
+  
+  downloaderWindow.on('closed', () => {
+    downloaderWindow = null;
+    if (!mainWindow && !downloaderCompleted && !isQuitting) {
+      app.quit();
+    }
+  });
+}
+
+function downloadFileWithProgress(url, dest) {
+  return new Promise((resolve, reject) => {
+    if (fs.existsSync(dest)) {
+      try { fs.unlinkSync(dest); } catch (_) {}
+    }
+
+    const file = fs.createWriteStream(dest);
+    let lastTime = Date.now();
+    let lastBytes = 0;
+
+    function get(requestUrl) {
+      https.get(requestUrl, (res) => {
+        if (res.statusCode === 301 || res.statusCode === 302) {
+          get(res.headers.location);
+          return;
+        }
+        if (res.statusCode !== 200) {
+          file.close();
+          fs.unlink(dest, () => {});
+          reject(new Error(`Server responded with status code ${res.statusCode}`));
+          return;
+        }
+
+        const totalBytes = parseInt(res.headers['content-length'], 10);
+        let downloadedBytes = 0;
+
+        res.on('data', (chunk) => {
+          downloadedBytes += chunk.length;
+          file.write(chunk);
+
+          const now = Date.now();
+          if (now - lastTime > 200) {
+            const timeDiff = (now - lastTime) / 1000;
+            const bytesDiff = downloadedBytes - lastBytes;
+            const speed = bytesDiff / timeDiff;
+            
+            if (downloaderWindow && !downloaderWindow.isDestroyed()) {
+              downloaderWindow.webContents.send('download:progress', {
+                percent: totalBytes ? (downloadedBytes / totalBytes) : 0,
+                downloaded: downloadedBytes,
+                total: totalBytes || 0,
+                speed: speed,
+              });
+            }
+
+            lastTime = now;
+            lastBytes = downloadedBytes;
+          }
+        });
+
+        res.on('end', () => {
+          file.end();
+          resolve();
+        });
+
+        res.on('error', (err) => {
+          file.close();
+          fs.unlink(dest, () => {});
+          reject(err);
+        });
+      }).on('error', (err) => {
+        file.close();
+        fs.unlink(dest, () => {});
+        reject(err);
+      });
+    }
+
+    get(url);
+  });
+}
+
+function extractZip(zipPath, destDir) {
+  return new Promise((resolve, reject) => {
+    const cmd = `unzip -o "${zipPath}" -d "${destDir}"`;
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        console.error('Unzip error:', stderr);
+        reject(new Error(`Extraction failed: ${stderr || err.message}`));
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+async function runSetupDownloads() {
+  const assetsDir = path.join(os.homedir(), '.aivoicechanger', 'assets');
+  if (!fs.existsSync(assetsDir)) {
+    fs.mkdirSync(assetsDir, { recursive: true });
+  }
+
+  const hubertPath = path.join(assetsDir, 'hubert_base.pt');
+  if (!fs.existsSync(hubertPath)) {
+    if (downloaderWindow && !downloaderWindow.isDestroyed()) {
+      downloaderWindow.webContents.send('download:status', 'Downloading base models (1/3)...');
+    }
+    await downloadFileWithProgress(
+      'https://huggingface.co/lj1995/VoiceConversionWebUI/resolve/main/hubert_base.pt',
+      hubertPath
+    );
+  }
+
+  const rmvpePath = path.join(assetsDir, 'rmvpe.onnx');
+  if (!fs.existsSync(rmvpePath)) {
+    if (downloaderWindow && !downloaderWindow.isDestroyed()) {
+      downloaderWindow.webContents.send('download:status', 'Downloading pitch models (2/3)...');
+    }
+    await downloadFileWithProgress(
+      'https://huggingface.co/lj1995/VoiceConversionWebUI/resolve/main/rmvpe.onnx',
+      rmvpePath
+    );
+  }
+
+  const zipDest = path.join(APP_ROOT, 'models', 'models.zip');
+  if (downloaderWindow && !downloaderWindow.isDestroyed()) {
+    downloaderWindow.webContents.send('download:status', 'Downloading voice models (3/3)...');
+  }
+  await downloadFileWithProgress(
+    'https://github.com/satiricalguru/RVC-Voicechanger/releases/download/v1.0.0/models.zip',
+    zipDest
+  );
+
+  if (downloaderWindow && !downloaderWindow.isDestroyed()) {
+    downloaderWindow.webContents.send('download:status', 'Extracting voice models...');
+  }
+  await extractZip(zipDest, APP_ROOT);
+
+  // Rename extracted models/applio to models/default
+  const oldApplioPath = path.join(APP_ROOT, 'models', 'applio');
+  const newDefaultPath = path.join(APP_ROOT, 'models', 'default');
+  if (fs.existsSync(oldApplioPath)) {
+    try {
+      if (fs.existsSync(newDefaultPath)) {
+        fs.rmSync(newDefaultPath, { recursive: true, force: true });
+      }
+      fs.renameSync(oldApplioPath, newDefaultPath);
+    } catch (e) {
+      console.error('Failed to rename models/applio to models/default:', e);
+    }
+  }
+
+  try {
+    fs.unlinkSync(zipDest);
+  } catch (e) {
+    console.error('Failed to delete zip file:', e);
+  }
+}
+
+async function launchAppFlow() {
+  const port = await startPythonBackend();
+  console.log(`[electron] Python backend ready on port ${port}`);
+  backendPort = port;
+  createWindow(port);
+  createTray();
+}
+
+function handleStartupError(err) {
+  console.error('[electron] Failed to start backend:', err);
+  dialog.showErrorBox(
+    'RVC Voicechanger — Startup Error',
+    `Could not start the audio backend:\n\n${err.message}\n\nMake sure Python and all dependencies are installed.\nRun: pip install -r requirements.txt`
+  );
+  app.quit();
 }
 
 // ── App lifecycle ─────────────────────────────────────────────────────────────
@@ -381,20 +625,10 @@ app.whenReady().then(async () => {
     }
   }
 
-  try {
-    const port = await startPythonBackend();
-    console.log(`[electron] Python backend ready on port ${port}`);
-    backendPort = port;
-    createWindow(port);
-    createTray();
-  } catch (err) {
-    console.error('[electron] Failed to start backend:', err);
-    // Show error dialog
-    await dialog.showErrorBox(
-      'RVC Voicechanger — Startup Error',
-      `Could not start the audio backend:\n\n${err.message}\n\nMake sure Python and all dependencies are installed.\nRun: pip install -r requirements.txt`
-    );
-    app.quit();
+  if (areModelsMissing()) {
+    showDownloaderWindow();
+  } else {
+    launchAppFlow().catch(handleStartupError);
   }
 });
 

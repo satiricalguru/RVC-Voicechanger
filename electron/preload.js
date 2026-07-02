@@ -28,4 +28,27 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Listen for backend-ready event from main
   onBackendReady: (cb) => ipcRenderer.on('backend:ready', (_event, port) => cb(port)),
   onBackendError: (cb) => ipcRenderer.on('backend:error', (_event, msg) => cb(msg)),
+
+  // Downloader IPC listeners & actions
+  startDownload: () => ipcRenderer.send('download:start'),
+  onDownloadProgress: (cb) => {
+    const listener = (_event, data) => cb(data);
+    ipcRenderer.on('download:progress', listener);
+    return () => ipcRenderer.removeListener('download:progress', listener);
+  },
+  onDownloadStatus: (cb) => {
+    const listener = (_event, status) => cb(status);
+    ipcRenderer.on('download:status', listener);
+    return () => ipcRenderer.removeListener('download:status', listener);
+  },
+  onDownloadError: (cb) => {
+    const listener = (_event, error) => cb(error);
+    ipcRenderer.on('download:error', listener);
+    return () => ipcRenderer.removeListener('download:error', listener);
+  },
+  onDownloadSuccess: (cb) => {
+    const listener = (_event) => cb();
+    ipcRenderer.on('download:success', listener);
+    return () => ipcRenderer.removeListener('download:success', listener);
+  },
 });

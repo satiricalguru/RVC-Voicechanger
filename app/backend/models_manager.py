@@ -75,7 +75,7 @@ APPLIO_META = {
 class ModelsManager:
     def __init__(self, models_dir: str = "models"):
         self.models_dir = Path(models_dir)
-        self.applio_dir = self.models_dir / "applio"
+        self.default_dir = self.models_dir / "default"
         self.custom_dir = self.models_dir / "custom"
         self.custom_dir.mkdir(parents=True, exist_ok=True)
         self.image_dir = self.models_dir / "images"
@@ -299,17 +299,17 @@ class ModelsManager:
             )
         ]
 
-        if self.applio_dir.exists():
-            for pth_file in sorted(self.applio_dir.rglob("*.pth")):
+        if self.default_dir.exists():
+            for pth_file in sorted(self.default_dir.rglob("*.pth")):
                 meta_hint = APPLIO_META.get(pth_file.parent.name) or APPLIO_META.get(pth_file.stem, {})
                 try:
                     extracted = self._extract_metadata(pth_file)
                 except Exception as exc:
-                    logger.warning("Skipping invalid Applio model %s: %s", pth_file, exc)
+                    logger.warning("Skipping invalid default model %s: %s", pth_file, exc)
                     continue
-                index_path = self._find_index_file(self.applio_dir, pth_file.stem)
+                index_path = self._find_index_file(self.default_dir, pth_file.stem)
                 self._voices.append(self._voice_entry(
-                    voice_id=f"applio_{pth_file.parent.name}",
+                    voice_id=f"default_{pth_file.parent.name}",
                     source="rvc",
                     path=str(pth_file),
                     index_path=index_path,

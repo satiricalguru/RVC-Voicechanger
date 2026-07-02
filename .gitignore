@@ -39,10 +39,10 @@ ehthumbs.db
 Thumbs.db
 
 # App models and static caches (keep folder structure but ignore weights)
-models/applio/*
+models/default/*
 models/custom/*
 models/images/*
-!models/applio/.gitkeep
+!models/default/.gitkeep
 !models/custom/.gitkeep
 !models/images/.gitkeep
 

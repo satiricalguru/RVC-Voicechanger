@@ -117,6 +117,18 @@ Compile the app bundle into a standalone executable (e.g., `.dmg` on macOS, `.ex
 npm run build
 ```
 
+### 🍎 macOS Gatekeeper Bypass
+
+Since these builds are unsigned, macOS Gatekeeper will block first-launch execution and may display a warning that the app is "damaged and cannot be opened".
+
+To bypass this and run the app:
+1. Drag **RVC Voicechanger.app** from the `.dmg` into your **Applications** folder.
+2. Open your terminal and execute:
+   ```bash
+   xattr -d com.apple.quarantine /Applications/RVC\ Voicechanger.app
+   ```
+3. Launch the application normally from Finder or your Application list.
+
 ---
 
 ## 📂 Folder Structure
@@ -130,7 +142,7 @@ npm run build
 ├── electron/             # Main process & IPC handler definitions
 ├── ui/                   # Next.js / Tailwind React components
 ├── models/               # RVC Models folder
-│   ├── applio/           # Native pre-installed RVC checkpoints
+│   ├── default/          # Native pre-installed RVC checkpoints
 │   ├── custom/           # User imported .pth / .index files
 │   └── images/           # Cached scraped web avatars
 ├── requirements.txt      # Python dependencies
