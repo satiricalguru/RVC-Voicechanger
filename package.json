@@ -1,0 +1,39 @@
+{
+  "name": "rvc-voicechanger",
+  "version": "1.0.0",
+  "description": "RVC Voicechanger - Real-time RVC voice conversion desktop app",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "electron .",
+    "prestart": "cd ui && pnpm build",
+    "start": "electron .",
+    "build": "cd ui && pnpm build && electron-builder",
+    "package": "electron-builder --dir"
+  },
+  "build": {
+    "appId": "com.rvcvoicechanger.app",
+    "productName": "RVC Voicechanger",
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.music",
+      "icon": "assets/icon.icns"
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "app/**/*"
+    ]
+  },
+  "keywords": ["voice-changer", "rvc", "electron", "ai", "audio"],
+  "author": "RVC Voicechanger",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "dependencies": {
+    "electron-store": "^10.0.0"
+  }
+}
