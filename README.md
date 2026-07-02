@@ -1,12 +1,21 @@
-# 🎙️ RVC Voicechanger
+<div align="center">
+  <img src="assets/icon.png" alt="RVC Voicechanger Logo" width="180" />
 
-[![Electron](https://img.shields.io/badge/Electron-v33.0.0-blue.svg?style=flat-square&logo=electron)](https://www.electronjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-v0.136.0-green.svg?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![React / Next.js](https://img.shields.io/badge/Next.js-v16.2.4-black.svg?style=flat-square&logo=nextdotjs)](https://nextjs.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-v2.0%2B-ee4c2c.svg?style=flat-square&logo=pytorch)](https://pytorch.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+  # RVC Voicechanger
 
-A premium, real-time AI voice changer desktop application powered by **Retrieval-based Voice Conversion (RVC)** and **Pedalboard DSP**. Experience near-zero latency conversion, automated image scraping for models, and customizable preset controls in a beautiful glassmorphic dark-mode interface.
+  <p align="center">
+    <a href="https://www.electronjs.org/"><img src="https://img.shields.io/badge/Electron-v33.0.0-blue.svg?style=flat-square&logo=electron" alt="Electron" /></a>
+    <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-v0.136.0-green.svg?style=flat-square&logo=fastapi" alt="FastAPI" /></a>
+    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-v16.2.4-black.svg?style=flat-square&logo=nextdotjs" alt="Next.js" /></a>
+    <a href="https://pytorch.org/"><img src="https://img.shields.io/badge/PyTorch-v2.0%2B-ee4c2c.svg?style=flat-square&logo=pytorch" alt="PyTorch" /></a>
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" alt="License" />
+  </p>
+
+  <p align="center">
+    <strong>A premium, real-time AI voice changer desktop application powered by Retrieval-based Voice Conversion (RVC) and Pedalboard DSP.</strong><br />
+    Experience near-zero latency conversion, automated image scraping for models, and customizable preset controls in a beautiful glassmorphic dark-mode interface.
+  </p>
+</div>
 
 ---
 
@@ -22,11 +31,9 @@ A premium, real-time AI voice changer desktop application powered by **Retrieval
 
 ---
 
-## 📸 Interface Preview
+## 📸 Screenshots
 
-<div align="center">
-  <img src="assets/icon.png" alt="RVC Voicechanger Logo" width="220" />
-</div>
+*Screenshots will be added here.*
 
 ---
 
@@ -67,7 +74,7 @@ graph TD
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/your-username/rvc-voicechanger.git
+    git clone https://github.com/satiricalguru/RVC-Voicechanger.git
     cd rvc-voicechanger
     ```
 
