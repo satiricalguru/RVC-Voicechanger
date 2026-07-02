@@ -14,7 +14,10 @@ interface TitleBarProps {
 
 export function TitleBar({ onImport, onHideToTray, isLive, latencyMs }: TitleBarProps) {
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between gap-4 border-b border-white/10 bg-black px-3 select-none">
+    <header 
+      className="flex h-12 shrink-0 items-center justify-between gap-4 border-b border-white/10 bg-black px-3 select-none"
+      style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
+    >
       {/* Left: space reserved for native macOS traffic lights in Electron,
           then logo + app name */}
       <div className="flex items-center gap-2 pl-[72px]">
@@ -48,7 +51,10 @@ export function TitleBar({ onImport, onHideToTray, isLive, latencyMs }: TitleBar
       </div>
 
       {/* Right: actions + window controls */}
-      <div className="flex items-center gap-1.5">
+      <div 
+        className="flex items-center gap-1.5"
+        style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+      >
         <Button
           variant="ghost"
           size="sm"

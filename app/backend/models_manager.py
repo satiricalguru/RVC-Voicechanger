@@ -342,10 +342,20 @@ class ModelsManager:
         logger.info("Indexed %s voices", len(self._voices))
 
     def get_voice_list(self) -> List[Dict]:
+        for voice in self._voices:
+            if not voice.get("image") and voice["id"] != "original":
+                img_filename = f"{voice['id']}.jpg"
+                if (self.image_dir / img_filename).exists():
+                    voice["image"] = f"/api/images/{img_filename}"
         return list(self._voices)
 
     def get_voice_by_id(self, voice_id: str) -> Optional[Dict]:
-        return next((voice for voice in self._voices if voice["id"] == voice_id), None)
+        voice = next((v for v in self._voices if v["id"] == voice_id), None)
+        if voice and not voice.get("image") and voice["id"] != "original":
+            img_filename = f"{voice['id']}.jpg"
+            if (self.image_dir / img_filename).exists():
+                voice["image"] = f"/api/images/{img_filename}"
+        return voice
 
     def validate_model_upload(self, pth_bytes: bytes, pth_name: str, index_name: Optional[str] = None) -> Dict:
         temp_path = self.custom_dir / f".validate_{Path(pth_name).name}"
