@@ -7,12 +7,13 @@
     "dev": "electron .",
     "prestart": "pnpm --prefix ui build",
     "start": "electron .",
-    "build": "pnpm --prefix ui build && electron-builder",
+    "build": "pnpm --prefix ui build && electron-builder --mac --x64 --arm64",
     "package": "electron-builder --dir"
   },
   "build": {
     "appId": "com.rvcvoicechanger.app",
     "productName": "RVC Voicechanger",
+    "asar": false,
     "mac": {
       "target": "dmg",
       "category": "public.app-category.music",
