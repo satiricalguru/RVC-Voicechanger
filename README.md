@@ -147,6 +147,10 @@ npm run build
 ### Acknowledgement
 *   This project builds on top of and acknowledges the outstanding open-source work of [IAHispano/Applio](https://github.com/IAHispano/Applio.git) which provided the foundation for RVC voice inference structures and configurations.
 
+<a href="https://github.com/IAHispano/Applio/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=IAHispano/Applio" alt="Applio Contributors" />
+</a>
+
 ---
 
 ## 📄 License
