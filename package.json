@@ -5,9 +5,9 @@
   "main": "electron/main.js",
   "scripts": {
     "dev": "electron .",
-    "prestart": "cd ui && pnpm build",
+    "prestart": "pnpm --prefix ui build",
     "start": "electron .",
-    "build": "cd ui && pnpm build && electron-builder",
+    "build": "pnpm --prefix ui build && electron-builder",
     "package": "electron-builder --dir"
   },
   "build": {
@@ -30,8 +30,8 @@
   "author": "RVC Voicechanger",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^33.0.0",
-    "electron-builder": "^25.0.0"
+    "electron": "33.4.11",
+    "electron-builder": "25.1.8"
   },
   "dependencies": {
     "electron-store": "^10.0.0"
