@@ -19,7 +19,13 @@ import { toast } from "sonner"
 interface UploadDialogProps {
   open: boolean
   onOpenChange: (v: boolean) => void
-  onUpload: (params: { name: string; pthName: string; indexName?: string }) => Promise<void> | void
+  onUpload: (params: {
+    name: string
+    pthFile?: File
+    pthPath?: string
+    indexFile?: File
+    indexPath?: string
+  }) => Promise<void> | void
 }
 
 interface PickedFile {
@@ -74,8 +80,10 @@ export function UploadDialog({ open, onOpenChange, onUpload }: UploadDialogProps
     try {
       await onUpload({
         name: name.trim() || pth.name.replace(/\.pth$/i, ""),
-        pthName: pth.name,
-        indexName: indexFile?.name,
+        pthFile: pth.file,
+        pthPath: pth.path,
+        indexFile: indexFile?.file,
+        indexPath: indexFile?.path,
       })
       clearInterval(ticker)
       setProgress(100)

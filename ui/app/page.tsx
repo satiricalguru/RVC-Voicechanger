@@ -29,6 +29,8 @@ import {
   createBackendWS,
   getApiBaseUrl,
   deleteVoiceModel,
+  uploadVoiceModelFile,
+  importVoiceModelPaths,
 } from "@/lib/voice-changer/backend-api"
 
 /**
@@ -171,23 +173,31 @@ export default function Page() {
       wsRef.current.send(JSON.stringify({ type }))
     }
   }
-
   const handleUpload = async ({
     name,
-    pthName,
-    indexName,
+    pthFile,
+    pthPath,
+    indexFile,
+    indexPath,
   }: {
     name: string
-    pthName: string
-    indexName?: string
+    pthFile?: File
+    pthPath?: string
+    indexFile?: File
+    indexPath?: string
   }) => {
-    // Fetch the real voice list from the backend so the ID, path, and metadata
-    // come from the server — not a locally-synthesised fake entry that would
-    // mismatch the backend's "custom_{safe_name}" ID scheme.
+    if (pthPath) {
+      await importVoiceModelPaths(pthPath, indexPath || null, name)
+    } else if (pthFile) {
+      await uploadVoiceModelFile(pthFile, indexFile || null, name)
+    } else {
+      throw new Error("No model file selected.")
+    }
+
     const updated = await fetchVoices()
     if (updated && updated.length > 0) setVoices(updated)
 
-    const displayName = name || pthName.replace(/\.pth$/i, "")
+    const displayName = name || pthFile?.name.replace(/\.pth$/i, "") || pthPath?.split(/[\\/]/).pop()?.replace(/\.pth$/i, "") || ""
     const safeName = displayName.replace(/\s+/g, "_")
     const newVoice =
       updated?.find((v) => v.id === `custom_${safeName}`) ??
@@ -205,7 +215,6 @@ export default function Page() {
       description: `${displayName} is now in My Voices.`,
     })
   }
-
   const handleDeleteVoice = async (id: string) => {
     const voice = voices.find((v) => v.id === id)
     if (!voice) return

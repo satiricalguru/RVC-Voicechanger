@@ -49,6 +49,52 @@ export async function deleteVoiceModel(voiceId: string): Promise<boolean> {
   }
 }
 
+export async function uploadVoiceModelFile(
+  pthFile: File,
+  indexFile: File | null,
+  modelName: string
+): Promise<any> {
+  const base = await getBaseUrl();
+  const formData = new FormData();
+  formData.append("pth_file", pthFile);
+  if (indexFile) {
+    formData.append("index_file", indexFile);
+  }
+  formData.append("model_name", modelName);
+
+  const res = await fetch(`${base}/api/upload-model`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+export async function importVoiceModelPaths(
+  pthPath: string,
+  indexPath: string | null,
+  modelName: string
+): Promise<any> {
+  const base = await getBaseUrl();
+  const res = await fetch(`${base}/api/import-model-paths`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      pth_path: pthPath,
+      index_path: indexPath,
+      model_name: modelName,
+    }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
 export async function fetchDevices(): Promise<AudioDevice[]> {
   try {
     const base = await getBaseUrl();
