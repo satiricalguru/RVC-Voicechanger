@@ -6,6 +6,7 @@ import type { Voice, VoiceChangerConfig, EngineMode, EngineStatus } from "@/lib/
 import { VoiceAvatar } from "./voice-avatar"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { TRANSLATIONS } from "@/lib/voice-changer/translations"
 
 interface VoiceLabViewProps {
   selectedVoice: Voice | null
@@ -13,19 +14,22 @@ interface VoiceLabViewProps {
   config: VoiceChangerConfig
   onChange: (patch: Partial<VoiceChangerConfig>) => void
   onPreview: () => void
+  language?: string
 }
 
-export function VoiceLabView({ selectedVoice, status, config, onChange, onPreview }: VoiceLabViewProps) {
+export function VoiceLabView({ selectedVoice, status, config, onChange, onPreview, language = "en" }: VoiceLabViewProps) {
+  const t = (key: keyof typeof TRANSLATIONS.en) =>
+    TRANSLATIONS[language as keyof typeof TRANSLATIONS]?.[key] ?? TRANSLATIONS.en[key] ?? String(key)
+
   return (
     <section className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1">
       <header className="flex flex-col gap-1">
-        <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/40">VoiceLab</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/40">{t("voicelab")}</span>
         <h1 className="text-balance text-3xl font-semibold tracking-tight">
-          Inspect and shape the active preset.
+          {t("voicelabTitle")}
         </h1>
         <p className="max-w-2xl text-sm text-white/55">
-          Switch between DSP-only and full RVC AI inference, audition the preset, and bake your settings
-          into a saved profile.
+          {t("voicelabDesc")}
         </p>
       </header>
 
@@ -34,7 +38,7 @@ export function VoiceLabView({ selectedVoice, status, config, onChange, onPrevie
         <article className="flex flex-col gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-5">
           <header className="flex items-center justify-between">
             <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">
-              Active Voice
+              {t("activeVoice")}
             </span>
             <Button
               size="sm"
@@ -43,7 +47,7 @@ export function VoiceLabView({ selectedVoice, status, config, onChange, onPrevie
               className="h-8 gap-1.5 border-white/15 bg-transparent text-xs text-white/85 hover:bg-white/5 hover:text-white"
             >
               {status.isRunning ? <Square className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-              {status.isRunning ? "Stop preview" : "Preview"}
+              {status.isRunning ? t("stopPreview") : t("preview")}
             </Button>
           </header>
 
@@ -59,18 +63,18 @@ export function VoiceLabView({ selectedVoice, status, config, onChange, onPrevie
                 {selectedVoice?.name ?? "Original"}
               </h2>
               <p className="line-clamp-2 text-sm text-white/55">
-                {selectedVoice?.description ?? "Your dry microphone signal — no effect applied."}
+                {selectedVoice?.description ?? t("originalDesc")}
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <Meta label="Source" value={selectedVoice?.source ?? "system"} />
-            <Meta label="Speaker" value={selectedVoice?.speaker ?? "—"} />
-            <Meta label="Version" value={selectedVoice?.version ?? "—"} />
-            <Meta label="Sample Rate" value={selectedVoice?.sampleRate ? `${selectedVoice.sampleRate} Hz` : "—"} />
-            <Meta label="Index" value={selectedVoice?.hasIndex ? "Attached" : "None"} />
-            <Meta label="Size" value={selectedVoice?.sizeMb ? `${selectedVoice.sizeMb} MB` : "—"} />
+            <Meta label={t("source")} value={selectedVoice?.source ?? "system"} />
+            <Meta label={t("speaker")} value={selectedVoice?.speaker ?? "—"} />
+            <Meta label={t("version")} value={selectedVoice?.version ?? "—"} />
+            <Meta label={t("sampleRateLabel")} value={selectedVoice?.sampleRate ? `${selectedVoice.sampleRate} Hz` : "—"} />
+            <Meta label={t("indexLabel")} value={selectedVoice?.hasIndex ? t("attached") : t("none")} />
+            <Meta label={t("sizeLabel")} value={selectedVoice?.sizeMb ? `${selectedVoice.sizeMb} MB` : "—"} />
           </div>
         </article>
 
@@ -78,10 +82,10 @@ export function VoiceLabView({ selectedVoice, status, config, onChange, onPrevie
         <article className="flex flex-col gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-5">
           <header className="flex items-center justify-between">
             <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">
-              Engine Mode
+              {t("engineMode")}
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">
-              {config.mode === "ai" ? "RVC · AI" : "DSP · Pedalboard"}
+              {config.mode === "ai" ? t("aiVoiceRvc") : t("dspOnly")}
             </span>
           </header>
 
@@ -90,31 +94,31 @@ export function VoiceLabView({ selectedVoice, status, config, onChange, onPrevie
               active={config.mode === "dsp"}
               onClick={() => onChange({ mode: "dsp" })}
               icon={Cpu}
-              title="DSP"
-              description="Pitch + reverb + gate. Lowest latency. Always available."
+              title={t("dspTitle")}
+              description={t("dspDesc")}
             />
             <ModeCard
               active={config.mode === "ai"}
               onClick={() => onChange({ mode: "ai" })}
               icon={Sparkles}
-              title="AI Voice"
-              description="Full RVC inference. Loads .pth + .index per preset."
+              title={t("aiTitle")}
+              description={t("aiDesc")}
             />
           </div>
 
           <div className="rounded-lg border border-white/10 bg-black/30 p-3">
             <div className="flex items-center justify-between">
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">
-                Realtime Status
+                {t("realtimeStatus")}
               </span>
               <span className="font-mono text-[10px] tabular-nums text-white/70">
                 {status.latencyMs.toFixed(0)} ms / {status.inferMs.toFixed(0)} ms infer
               </span>
             </div>
             <div className="mt-2 grid grid-cols-3 gap-2">
-              <Pill label="Sample" value={`${status.sampleRate / 1000}k`} />
-              <Pill label="Buffer" value={status.bufferSize} />
-              <Pill label="Drops" value={status.drops} />
+              <Pill label={t("sample")} value={`${status.sampleRate / 1000}k`} />
+              <Pill label={t("buffer")} value={status.bufferSize} />
+              <Pill label={t("drops")} value={status.drops} />
             </div>
           </div>
 
@@ -125,7 +129,6 @@ export function VoiceLabView({ selectedVoice, status, config, onChange, onPrevie
               className="h-9 gap-1.5 border-white/15 bg-transparent text-xs text-white/85 hover:bg-white/5 hover:text-white"
               onClick={() => {
                 if (!selectedVoice) { toast("No voice selected"); return }
-                // Apply sensible defaults for the current voice source
                 const isAi = selectedVoice.source === "rvc" || selectedVoice.source === "custom"
                 onChange({
                   mode: isAi ? "ai" : "dsp",
@@ -140,7 +143,7 @@ export function VoiceLabView({ selectedVoice, status, config, onChange, onPrevie
               }}
             >
               <Wand2 className="h-3.5 w-3.5" />
-              Auto-tune to model
+              {t("autoTune")}
             </Button>
             <Button
               size="sm"
@@ -151,7 +154,7 @@ export function VoiceLabView({ selectedVoice, status, config, onChange, onPrevie
               }}
             >
               <Save className="h-3.5 w-3.5" />
-              Save as preset
+              {t("savePreset")}
             </Button>
           </div>
         </article>

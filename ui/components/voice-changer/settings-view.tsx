@@ -206,7 +206,7 @@ export function SettingsView({
         {/* Voice tuning */}
         <Panel title={t("voice")} icon={Cpu}>
           <SliderField
-            label="Pitch"
+            label={t("pitch")}
             unit="st"
             value={config.pitchSemitones}
             min={-24}
@@ -216,7 +216,7 @@ export function SettingsView({
             onChange={(v) => onChange({ pitchSemitones: v })}
           />
           <SliderField
-            label="Index Strength"
+            label={t("indexStrength")}
             value={config.indexRate}
             min={0}
             max={1}
@@ -225,7 +225,7 @@ export function SettingsView({
             onChange={(v) => onChange({ indexRate: v })}
           />
           <SliderField
-            label="Protect"
+            label={t("protect")}
             value={config.protect}
             min={0}
             max={0.5}
@@ -234,7 +234,7 @@ export function SettingsView({
             onChange={(v) => onChange({ protect: v })}
           />
           <SliderField
-            label="Reverb Damping"
+            label={t("reverbDamping")}
             value={config.reverbDamping}
             min={0}
             max={1}

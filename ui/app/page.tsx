@@ -376,6 +376,7 @@ export default function Page() {
               config={config}
               onChange={updateConfig}
               onPreview={togglePower}
+              language={config.language}
             />
           )}
           {view === "soundboard" && (

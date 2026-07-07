@@ -111,6 +111,23 @@ export const TRANSLATIONS = {
     modelLoaded: "Model loaded",
     loadingModel: "Loading model…",
     noModelLoaded: "No model loaded",
+
+    // VoiceLab panel
+    reverbDamping: "Reverb Damping",
+    source: "Source",
+    speaker: "Speaker",
+    version: "Version",
+    sampleRateLabel: "Sample Rate",
+    indexLabel: "Index",
+    sizeLabel: "Size",
+    attached: "Attached",
+    none: "None",
+    dspTitle: "DSP",
+    dspDesc: "Pitch + reverb + gate. Lowest latency. Always available.",
+    aiTitle: "AI Voice",
+    aiDesc: "Full RVC inference. Loads .pth + .index per preset.",
+    realtimeStatus: "Realtime Status",
+    autoTune: "Auto-tune to model",
   },
   ja: {
     // Sidebar
@@ -222,6 +239,23 @@ export const TRANSLATIONS = {
     modelLoaded: "モデル読み込み済み",
     loadingModel: "モデル読み込み中…",
     noModelLoaded: "モデル未読み込み",
+
+    // VoiceLab panel
+    reverbDamping: "リバーブダンピング",
+    source: "ソース",
+    speaker: "話者",
+    version: "バージョン",
+    sampleRateLabel: "サンプリングレート",
+    indexLabel: "インデックス",
+    sizeLabel: "サイズ",
+    attached: "接続済み",
+    none: "なし",
+    dspTitle: "DSP",
+    dspDesc: "ピッチ・リバーブ・ゲート。最低遅延。常時利用可能。",
+    aiTitle: "AI音声",
+    aiDesc: "フルRVC推論。プリセットごとに.pth+.indexをロードします。",
+    realtimeStatus: "リアルタイムステータス",
+    autoTune: "モデルへ自動チューニング",
   },
   zh: {
     // Sidebar
@@ -333,6 +367,23 @@ export const TRANSLATIONS = {
     modelLoaded: "模型已加载",
     loadingModel: "正在加载模型…",
     noModelLoaded: "未加载模型",
+
+    // VoiceLab panel
+    reverbDamping: "混响衰减",
+    source: "来源",
+    speaker: "说者",
+    version: "版本",
+    sampleRateLabel: "采样率",
+    indexLabel: "索引文件",
+    sizeLabel: "文件大小",
+    attached: "已附加",
+    none: "无",
+    dspTitle: "DSP",
+    dspDesc: "音调+混响+噪声门。最低延迟，始终可用。",
+    aiTitle: "AI变声",
+    aiDesc: "完整RVC推理，每个预设加载.pth+.index文件。",
+    realtimeStatus: "实时状态",
+    autoTune: "自动调整模型参数",
   },
 }
 
