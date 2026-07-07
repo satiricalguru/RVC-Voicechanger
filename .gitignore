@@ -42,9 +42,11 @@ Thumbs.db
 models/default/*
 models/custom/*
 models/images/*
+models/soundboard/*
 !models/default/.gitkeep
 !models/custom/.gitkeep
 !models/images/.gitkeep
+!models/soundboard/.gitkeep
 
 # Ignore original.jpg since it is copied from assets
 models/images/original.jpg
