@@ -151,59 +151,58 @@
     @apply bg-background text-foreground;
   }
 }
-/* Light mode overrides for hardcoded bg-black, text-white, and dark overlays */
+
+/* ─── Light Mode Overrides ──────────────────────────────────────────────── */
+
+/* Base surfaces */
 .light,
 .light .bg-black,
+.light .bg-black\/30,
+.light .bg-black\/40,
 .light aside,
 .light footer,
-.light header,
-.light .bg-black\/30 {
+.light header {
   background-color: var(--background) !important;
   color: var(--foreground) !important;
 }
 
-.light .bg-white\/\[0\.02\],
-.light .bg-white\/\[0\.01\],
-.light .bg-white\/\[0\.03\],
-.light .bg-white\/\[0\.04\],
-.light .bg-white\/\[0\.06\] {
+/* Semi-transparent card surfaces */
+.light [class*="bg-white/[0.0"],
+.light [class*="bg-white/[0."] {
   background-color: var(--card) !important;
 }
 
-.light .text-white,
-.light .text-white\/90,
-.light .text-white\/85,
-.light .text-white\/80,
-.light .text-white\/70,
-.light .text-white\/60,
-.light .text-white\/55,
-.light .text-white\/45,
-.light .text-white\/40,
-.light .text-white\/30,
-.light .text-muted-foreground {
+/* ALL white text → dark foreground */
+.light [class*="text-white"] {
   color: var(--foreground) !important;
 }
 
+/* Dimmer text tones → muted */
+.light .text-white\/65,
 .light .text-white\/60,
 .light .text-white\/55,
+.light .text-white\/50,
 .light .text-white\/45,
 .light .text-white\/40,
 .light .text-white\/30 {
   color: var(--muted-foreground) !important;
 }
 
-.light .border-white\/10,
-.light .border-white\/15,
-.light .border-white\/5,
-.light .border-white\/20,
+/* ALL white borders → light border */
+.light [class*="border-white"] {
+  border-color: var(--border) !important;
+}
+
 .light .border-border,
 .light .border-dashed {
   border-color: var(--border) !important;
 }
 
-.light .hover\:bg-white\/5:hover,
-.light .hover\:bg-white\/\[0\.03\]:hover,
-.light .hover\:bg-white\/\[0\.04\]:hover,
+/* Hover backgrounds */
+.light [class*="hover:bg-white"]:hover {
+  background-color: var(--accent) !important;
+}
+
 .light .bg-white\/5 {
   background-color: var(--accent) !important;
 }
@@ -212,9 +211,16 @@
   background-color: var(--secondary) !important;
 }
 
-/* Invert active states so they stay high contrast dark/black background with white text */
+/* Active/selected states: keep dark-on-light contrast */
 .light .bg-white {
   background-color: oklch(0.205 0 0) !important;
+  color: oklch(0.985 0 0) !important;
+}
+
+/* Child text inside active dark buttons must stay white */
+.light .bg-white [class*="text-white"],
+.light .bg-white span,
+.light .bg-white svg {
   color: oklch(0.985 0 0) !important;
 }
 
@@ -226,23 +232,43 @@
   color: oklch(0.985 0 0 / 60%) !important;
 }
 
-.light .bg-white\/\[0\.02\] input,
-.light .bg-white\/\[0\.02\] select,
-.light input,
-.light select {
-  background-color: var(--background) !important;
-  color: var(--foreground) !important;
+/* Muted-foreground used by radix labels */
+.light .text-muted-foreground {
+  color: var(--muted-foreground) !important;
 }
 
-/* Adjust switch colors in light mode */
-.light .bg-white\/10[data-state=unchecked] {
+/* Inputs & selects */
+.light input,
+.light select,
+.light textarea {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Sliders */
+.light [data-slot="slider-track"] {
+  background-color: oklch(0.88 0 0) !important;
+}
+.light [data-slot="slider-range"] {
+  background-color: oklch(0.205 0 0) !important;
+}
+.light [data-slot="slider-thumb"] {
+  background-color: oklch(0.205 0 0) !important;
+  border-color: oklch(0.205 0 0) !important;
+}
+
+/* Switches */
+.light [data-slot="switch-thumb"] {
+  background-color: oklch(0.985 0 0) !important;
+}
+
+.light [data-state="unchecked"][data-slot="switch"],
+.light [data-state="unchecked"].bg-white\/10 {
   background-color: var(--muted) !important;
 }
 
-.light .data-\[state\=checked\]\:bg-white[data-state=checked] {
+.light [data-state="checked"].data-\[state\=checked\]\:bg-white,
+.light [data-state="checked"][class*="bg-white"] {
   background-color: oklch(0.205 0 0) !important;
-}
-
-.light .\[\&\_\[data-slot\=switch-thumb\]\]\:bg-black [data-slot=switch-thumb] {
-  background-color: var(--background) !important;
 }
