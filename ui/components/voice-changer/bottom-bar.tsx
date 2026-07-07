@@ -4,6 +4,7 @@ import { Power, Headphones, Mic2 } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { Visualizer } from "./visualizer"
+import { TRANSLATIONS } from "@/lib/voice-changer/translations"
 
 interface BottomBarProps {
   isLive: boolean
@@ -15,6 +16,7 @@ interface BottomBarProps {
   vuIn: number
   vuOut: number
   drops: number
+  language?: string
 }
 
 export function BottomBar({
@@ -27,21 +29,25 @@ export function BottomBar({
   vuIn,
   vuOut,
   drops,
+  language = "en",
 }: BottomBarProps) {
+  const t = (key: keyof typeof TRANSLATIONS.en) => {
+    return TRANSLATIONS[language as keyof typeof TRANSLATIONS]?.[key] || TRANSLATIONS.en[key] || String(key)
+  }
+
   return (
     <footer className="flex h-24 shrink-0 items-stretch gap-3 border-t border-white/10 bg-black px-3 py-2.5">
-      {/* Toggles */}
       <div className="flex w-[230px] shrink-0 flex-col justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2">
         <ToggleRow
           icon={Headphones}
-          label="Hear Myself"
+          label={t("hearMyself")}
           hint="Monitor mix"
           checked={hearMyself}
           onChange={onHearMyselfChange}
         />
         <ToggleRow
           icon={Mic2}
-          label="Voice Changer"
+          label={t("voiceChanger")}
           hint="Master enable"
           checked={voiceChangerEnabled}
           onChange={onVoiceChangerChange}
@@ -60,7 +66,7 @@ export function BottomBar({
             Waveform
           </div>
           <div className="pointer-events-none absolute right-2 top-1.5 font-mono text-[9px] uppercase tracking-[0.22em] text-white/40">
-            {drops > 0 ? `Drops: ${drops}` : "0 drops"}
+            {drops > 0 ? `${t("drops")}: ${drops}` : `0 ${t("drops")}`}
           </div>
         </div>
         <div className="flex w-44 flex-col justify-center gap-2">
@@ -85,7 +91,7 @@ export function BottomBar({
         )}
         <Power className="h-5 w-5" />
         <span className="font-mono text-[11px] font-bold uppercase tracking-[0.22em]">
-          {isLive ? "Stop Engine" : "Start Engine"}
+          {isLive ? t("stopEngine") : t("startEngine")}
         </span>
         <span
           className={cn(
@@ -93,7 +99,7 @@ export function BottomBar({
             isLive ? "text-black/50" : "text-white/40",
           )}
         >
-          {isLive ? "Press space to stop" : "Press space to start"}
+          {isLive ? t("pressSpaceToStop") : t("pressSpaceToStart")}
         </span>
       </button>
     </footer>

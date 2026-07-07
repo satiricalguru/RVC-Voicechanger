@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import type { Voice } from "@/lib/voice-changer/types"
 import { VoiceAvatar } from "./voice-avatar"
+import { TRANSLATIONS } from "@/lib/voice-changer/translations"
 
 interface VoiceGridProps {
   voices: Voice[]
@@ -21,6 +22,7 @@ interface VoiceGridProps {
   totalCount: number
   latencyMs: number
   inferMs: number
+  language?: string
 }
 
 export function VoiceGrid({
@@ -37,6 +39,7 @@ export function VoiceGrid({
   totalCount,
   latencyMs,
   inferMs,
+  language = "en",
 }: VoiceGridProps) {
   const [query, setQuery] = useState("")
 
@@ -54,6 +57,17 @@ export function VoiceGrid({
     return Array.from(set)
   }, [voices])
 
+  const t = (key: keyof typeof TRANSLATIONS.en) => {
+    return TRANSLATIONS[language as keyof typeof TRANSLATIONS]?.[key] || TRANSLATIONS.en[key] || String(key)
+  }
+
+  const getChipLabel = (c: string) => {
+    if (c === "All") return t("allVoices")
+    if (c === "Favorites") return t("favorites")
+    if (c === "My Voices") return t("myVoices")
+    return c
+  }
+
   return (
     <section className="flex h-full min-h-0 flex-col gap-4">
       {/* Hero */}
@@ -61,20 +75,19 @@ export function VoiceGrid({
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/40">
-              Voicebox · {category}
+              {t("voicebox")} · {getChipLabel(category)}
             </span>
             <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
-              Real-time voice conversion.
+              {t("headline")}
             </h1>
             <p className="max-w-xl text-pretty text-sm text-white/55">
-              Drop in a <span className="font-mono text-white/80">.pth</span> +{" "}
-              <span className="font-mono text-white/80">.index</span>, pick a preset, and go live with sub-frame latency.
+              {t("subHeadline")}
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            <Stat label="Models" value={String(totalCount)} />
-            <Stat label="Latency" value={`${latencyMs.toFixed(0)} ms`} />
-            <Stat label="Infer" value={`${inferMs.toFixed(0)} ms`} />
+            <Stat label={t("modelsCount")} value={String(totalCount)} />
+            <Stat label={t("latencyCount")} value={`${latencyMs.toFixed(0)} ms`} />
+            <Stat label={t("inferCount")} value={`${inferMs.toFixed(0)} ms`} />
           </div>
         </div>
       </div>
@@ -86,7 +99,7 @@ export function VoiceGrid({
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search voices, categories, speakers…"
+            placeholder={t("searchPlaceholder")}
             className="h-10 border-white/10 bg-white/[0.03] pl-9 text-sm text-white placeholder:text-white/35 focus-visible:border-white/30 focus-visible:ring-0"
           />
         </div>
@@ -103,7 +116,7 @@ export function VoiceGrid({
               onClick={() => onCategoryChange?.(chip)}
               type="button"
             >
-              {chip}
+              {getChipLabel(chip)}
             </button>
           ))}
         </div>
@@ -113,9 +126,8 @@ export function VoiceGrid({
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
         {filtered.length === 0 ? (
           <div className="grid h-full place-content-center gap-2 rounded-xl border border-dashed border-white/10 p-10 text-center">
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/30">No match</span>
-            <h3 className="text-lg font-semibold">Nothing matches that filter.</h3>
-            <p className="text-sm text-white/45">Try another term, switch collections, or import a new model.</p>
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/30">{t("noVoicesFound")}</span>
+            <h3 className="text-lg font-semibold">{t("noVoicesFound")}</h3>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">

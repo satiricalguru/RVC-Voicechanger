@@ -72,9 +72,10 @@ export interface VoiceChangerConfig {
   reverbDamping: number // 0..1
   noiseGateDb: number // -90..0
   compressorRatio: number // 1..20
-
   // Selected voice
   selectedVoiceId: string
+  theme: "dark" | "light"
+  language: "en" | "ja" | "zh"
 }
 
 export interface SoundboardSound {

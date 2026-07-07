@@ -147,4 +147,6 @@ export const DEFAULT_CONFIG: VoiceChangerConfig = {
   noiseGateDb: -40,
   compressorRatio: 4,
   selectedVoiceId: "original",
+  theme: "dark",
+  language: "en",
 }

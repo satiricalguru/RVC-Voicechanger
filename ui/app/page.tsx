@@ -37,7 +37,7 @@ import {
   uploadSoundboardSound,
   deleteSoundboardSound,
 } from "@/lib/voice-changer/backend-api"
-
+import { TRANSLATIONS } from "@/lib/voice-changer/translations"
 /**
  * Main shell — purely client-side.
  * In the real Electron+FastAPI app this composes a WebSocket to the Python
@@ -73,11 +73,24 @@ export default function Page() {
 
   const [sounds, setSounds] = useState<SoundboardSound[]>([])
   const [apiBaseUrl, setApiBaseUrl] = useState("")
-
   useEffect(() => {
     getApiBaseUrl().then(setApiBaseUrl)
   }, [])
 
+  useEffect(() => {
+    const root = window.document.documentElement
+    if (config.theme === "light") {
+      root.classList.remove("dark")
+      root.classList.add("light")
+      root.style.backgroundColor = "#ffffff"
+      root.style.color = "#121212"
+    } else {
+      root.classList.remove("light")
+      root.classList.add("dark")
+      root.style.backgroundColor = "#000000"
+      root.style.color = "#ffffff"
+    }
+  }, [config.theme])
   const resolvedSounds = useMemo(() => {
     return sounds.map((s) => ({
       ...s,
@@ -308,7 +321,7 @@ export default function Page() {
   const loadedVoice = voices.find((v) => v.id === status.loadedVoiceId) ?? null
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-black text-white">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground">
       <TitleBar
         onImport={() => setUploadOpen(true)}
         onHideToTray={() => toast("Hidden to tray", { description: "Still running in the background" })}
@@ -328,6 +341,7 @@ export default function Page() {
           chunkMs={status.chunkMs}
           loadedVoiceName={loadedVoice?.name ?? null}
           onImport={() => setUploadOpen(true)}
+          language={config.language}
         />
 
         <main className="min-w-0 flex-1 overflow-hidden p-4">
@@ -346,6 +360,7 @@ export default function Page() {
               totalCount={voices.length}
               latencyMs={status.latencyMs}
               inferMs={status.inferMs}
+              language={config.language}
             />
           )}
           {view === "voicelab" && (
@@ -362,6 +377,7 @@ export default function Page() {
               sounds={resolvedSounds}
               onUpload={handleUploadSound}
               onDelete={handleDeleteSound}
+              language={config.language}
             />
           )}
           {view === "settings" && (
@@ -400,6 +416,7 @@ export default function Page() {
         vuIn={status.vuIn}
         vuOut={status.vuOut}
         drops={status.drops}
+        language={config.language}
       />
 
       <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} onUpload={handleUpload} />

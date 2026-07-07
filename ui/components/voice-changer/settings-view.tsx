@@ -27,7 +27,9 @@ import type {
   F0Method,
   VoiceChangerConfig,
 } from "@/lib/voice-changer/types"
+
 import { cn } from "@/lib/utils"
+import { TRANSLATIONS } from "@/lib/voice-changer/translations"
 
 interface SettingsViewProps {
   config: VoiceChangerConfig
@@ -50,39 +52,45 @@ export function SettingsView({
   onRescanDevices,
   onDownloadRmvpe,
 }: SettingsViewProps) {
+  const lang = config.language || "en"
+  const t = (key: keyof typeof TRANSLATIONS.en) => {
+    return TRANSLATIONS[lang]?.[key] || TRANSLATIONS.en[key] || String(key)
+  }
+
   return (
     <section className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1">
       <header className="flex flex-col gap-1">
-        <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/40">Settings</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/40">
+          {t("settings")}
+        </span>
         <h1 className="text-balance text-3xl font-semibold tracking-tight">
-          Tune the entire signal chain.
+          {t("settingsTitle")}
         </h1>
         <p className="max-w-2xl text-sm text-white/55">
-          Configure devices, sample rate, AI chunking and the F0 estimator. Every parameter is hot-swappable
-          while the engine is live.
+          {t("settingsDesc")}
         </p>
       </header>
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3">
         {/* Routing */}
-        <Panel title="Routing" icon={Mic}>
+        <Panel title={t("routing")} icon={Mic}>
           <DeviceField
             icon={Mic}
-            label="Input Device"
+            label={t("inputDevice")}
             value={config.inputDeviceIndex}
             devices={inputDevices}
             onChange={(v) => onChange({ inputDeviceIndex: v })}
           />
           <DeviceField
             icon={Volume2}
-            label="Output Device"
+            label={t("outputDevice")}
             value={config.outputDeviceIndex}
             devices={outputDevices}
             onChange={(v) => onChange({ outputDeviceIndex: v })}
           />
           <DeviceField
             icon={Headphones}
-            label="Monitor Device"
+            label={t("monitorDevice")}
             value={config.monitorDeviceIndex}
             devices={monitorDevices}
             onChange={(v) => onChange({ monitorDeviceIndex: v })}
@@ -94,14 +102,14 @@ export function SettingsView({
             className="mt-1 h-8 w-full justify-center gap-1.5 border-white/15 bg-transparent text-xs text-white/80 hover:bg-white/5 hover:text-white"
           >
             <RefreshCw className="h-3 w-3" />
-            Rescan Devices
+            {t("rescanDevices")}
           </Button>
         </Panel>
 
         {/* Levels */}
-        <Panel title="Levels" icon={Volume2}>
+        <Panel title={t("levels")} icon={Volume2}>
           <SliderField
-            label="Input Volume"
+            label={t("inputVolume")}
             unit="%"
             value={config.inputVolume}
             min={0}
@@ -110,7 +118,7 @@ export function SettingsView({
             onChange={(v) => onChange({ inputVolume: v })}
           />
           <SliderField
-            label="Output Volume"
+            label={t("outputVolume")}
             unit="%"
             value={config.outputVolume}
             min={0}
@@ -119,7 +127,7 @@ export function SettingsView({
             onChange={(v) => onChange({ outputVolume: v })}
           />
           <SliderField
-            label="Monitor Mix"
+            label={t("monitorMix")}
             unit="%"
             value={config.monitorMix}
             min={0}
@@ -128,13 +136,13 @@ export function SettingsView({
             onChange={(v) => onChange({ monitorMix: v })}
           />
           <ToggleField
-            label="Hear Myself"
+            label={t("hearMyself")}
             description="Routes processed audio to monitor"
             checked={config.hearMyself}
             onChange={(v) => onChange({ hearMyself: v })}
           />
           <ToggleField
-            label="Voice Changer"
+            label={t("voiceChanger")}
             description="Master enable for the engine"
             checked={config.voiceChangerEnabled}
             onChange={(v) => onChange({ voiceChangerEnabled: v })}
@@ -142,9 +150,9 @@ export function SettingsView({
         </Panel>
 
         {/* Audio Engine */}
-        <Panel title="Audio Engine" icon={Waveform}>
+        <Panel title={t("audioEngine")} icon={Waveform}>
           <SelectField
-            label="Sample Rate"
+            label={t("sampleRate")}
             value={String(config.sampleRate)}
             onChange={(v) => onChange({ sampleRate: Number(v) as 44100 | 48000 })}
             options={[
@@ -153,7 +161,7 @@ export function SettingsView({
             ]}
           />
           <SelectField
-            label="Buffer Size"
+            label={t("bufferSize")}
             value={String(config.bufferSize)}
             onChange={(v) => onChange({ bufferSize: Number(v) as 256 | 512 | 1024 | 2048 })}
             options={[
@@ -164,7 +172,7 @@ export function SettingsView({
             ]}
           />
           <SelectField
-            label="AI Chunk Size"
+            label={t("aiChunkSize")}
             value={String(config.chunkMs)}
             onChange={(v) => onChange({ chunkMs: Number(v) as 128 | 256 | 512 })}
             options={[
@@ -174,7 +182,7 @@ export function SettingsView({
             ]}
           />
           <SelectField
-            label="F0 Method"
+            label={t("f0Method")}
             value={config.f0Method}
             onChange={(v) => onChange({ f0Method: v as F0Method })}
             options={[
@@ -196,7 +204,7 @@ export function SettingsView({
         </Panel>
 
         {/* Voice tuning */}
-        <Panel title="Voice Tuning" icon={Cpu}>
+        <Panel title={t("voice")} icon={Cpu}>
           <SliderField
             label="Pitch"
             unit="st"
@@ -237,11 +245,28 @@ export function SettingsView({
         </Panel>
 
         {/* App */}
-        <Panel title="App" icon={Folder}>
-          <KeyValue label="Theme" value="Mono · Black & White" />
-          <KeyValue label="Tray Mode" value="Enabled" />
-          <KeyValue label="Drops" value={drops > 0 ? `${drops} ⚠` : "0"} mono />
-          <KeyValue label="Custom Models Dir" value="~/.aivoicechanger/models" mono />
+        <Panel title={t("app")} icon={Folder}>
+          <SelectField
+            label={t("theme")}
+            value={config.theme || "dark"}
+            onChange={(v) => onChange({ theme: v as "dark" | "light" })}
+            options={[
+              { value: "dark", label: "Dark Mode" },
+              { value: "light", label: "Light Mode" },
+            ]}
+          />
+          <SelectField
+            label={t("language")}
+            value={config.language || "en"}
+            onChange={(v) => onChange({ language: v as "en" | "ja" | "zh" })}
+            options={[
+              { value: "en", label: "English" },
+              { value: "ja", label: "日本語" },
+              { value: "zh", label: "简体中文" },
+            ]}
+          />
+          <KeyValue label={t("drops")} value={drops > 0 ? `${drops} ⚠` : "0"} mono />
+          <KeyValue label={t("customModelsDir")} value="~/.aivoicechanger/models" mono />
           <Button
             variant="outline"
             size="sm"
@@ -249,17 +274,17 @@ export function SettingsView({
             className="mt-1 h-8 w-full justify-center gap-1.5 border-white/15 bg-transparent text-xs text-white/80 hover:bg-white/5 hover:text-white"
           >
             <Download className="h-3 w-3" />
-            Download RMVPE Weights
+            {t("downloadRmvpe")}
           </Button>
         </Panel>
 
-        {/* About / shortcuts */}
-        <Panel title="Shortcuts" icon={KeyRound}>
-          <ShortcutRow keys={["Space"]} label="Toggle engine" />
-          <ShortcutRow keys={["1", "2", "3"]} label="Pick voice from grid" />
-          <ShortcutRow keys={["⌘", "K"]} label="Search voices" />
-          <ShortcutRow keys={["⌘", ","]} label="Open settings" />
-          <ShortcutRow keys={["M"]} label="Mute master" />
+        {/* Shortcuts */}
+        <Panel title={t("shortcuts")} icon={KeyRound}>
+          <ShortcutRow keys={["Space"]} label={t("toggleEngine")} />
+          <ShortcutRow keys={["1", "2", "3"]} label={t("pickVoice")} />
+          <ShortcutRow keys={["⌘", "K"]} label={t("searchVoices")} />
+          <ShortcutRow keys={["⌘", ","]} label={t("openSettings")} />
+          <ShortcutRow keys={["M"]} label={t("muteMaster")} />
         </Panel>
       </div>
     </section>

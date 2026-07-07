@@ -6,14 +6,25 @@ import { Button } from "@/components/ui/button"
 import type { SoundboardSound } from "@/lib/voice-changer/types"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { TRANSLATIONS } from "@/lib/voice-changer/translations"
 
 interface SoundboardViewProps {
   sounds: SoundboardSound[]
   onUpload: (file: File, name: string) => Promise<void>
   onDelete: (id: string) => Promise<void>
+  language?: string
 }
 
-export function SoundboardView({ sounds, onUpload, onDelete }: SoundboardViewProps) {
+export function SoundboardView({
+  sounds,
+  onUpload,
+  onDelete,
+  language = "en",
+}: SoundboardViewProps) {
+  const t = (key: keyof typeof TRANSLATIONS.en) => {
+    return TRANSLATIONS[language as keyof typeof TRANSLATIONS]?.[key] || TRANSLATIONS.en[key] || String(key)
+  }
+
   const [name, setName] = useState("")
   const [file, setFile] = useState<File | null>(null)
   const [busy, setBusy] = useState(false)
@@ -89,12 +100,14 @@ export function SoundboardView({ sounds, onUpload, onDelete }: SoundboardViewPro
   return (
     <section className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1">
       <header className="flex flex-col gap-1">
-        <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/40">Soundboard</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/40">
+          {t("soundboard")}
+        </span>
         <h1 className="text-balance text-3xl font-semibold tracking-tight">
-          Trigger sound effects instantly.
+          {t("soundboardTitle")}
         </h1>
         <p className="max-w-2xl text-sm text-white/55">
-          Upload custom audio clips (MP3, WAV, etc.) to play them back instantly.
+          {t("soundboardDesc")}
         </p>
       </header>
 
@@ -102,12 +115,12 @@ export function SoundboardView({ sounds, onUpload, onDelete }: SoundboardViewPro
         {/* Upload Panel */}
         <article className="lg:col-span-1 flex flex-col gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-5">
           <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">
-            Add New Sound
+            {t("addNewSound")}
           </span>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <label className="text-xs text-white/60">Sound Label/Name</label>
+              <label className="text-xs text-white/60">{t("soundLabel")}</label>
               <input
                 type="text"
                 value={name}
@@ -118,7 +131,7 @@ export function SoundboardView({ sounds, onUpload, onDelete }: SoundboardViewPro
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-xs text-white/60">Audio File</label>
+              <label className="text-xs text-white/60">{t("audioFile")}</label>
               <div
                 onClick={() => fileInputRef.current?.click()}
                 className={cn(
@@ -135,7 +148,7 @@ export function SoundboardView({ sounds, onUpload, onDelete }: SoundboardViewPro
                 />
                 <UploadCloud className="h-6 w-6 text-white/40" />
                 <div className="text-xs text-white/70">
-                  {file ? file.name : "Click to select audio file"}
+                  {file ? file.name : t("clickToSelect")}
                 </div>
                 <div className="text-[10px] text-white/40 font-mono">MP3, WAV, OGG, or M4A</div>
               </div>
@@ -146,7 +159,7 @@ export function SoundboardView({ sounds, onUpload, onDelete }: SoundboardViewPro
               disabled={busy || !file}
               className="mt-2 w-full bg-white text-black hover:bg-white/90 disabled:bg-white/50"
             >
-              {busy ? "Uploading..." : "Upload Sound"}
+              {busy ? t("uploading") : t("uploadSound")}
             </Button>
           </form>
         </article>
@@ -154,15 +167,15 @@ export function SoundboardView({ sounds, onUpload, onDelete }: SoundboardViewPro
         {/* List of Sounds */}
         <article className="lg:col-span-2 flex flex-col gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-5 min-h-[300px]">
           <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">
-            Your Sounds
+            {t("yourSounds")}
           </span>
 
           {sounds.length === 0 ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center text-white/40">
               <Music className="h-8 w-8 stroke-1" />
-              <div className="text-sm font-medium">No sounds loaded</div>
+              <div className="text-sm font-medium">{t("noSounds")}</div>
               <p className="max-w-[280px] text-xs text-white/30">
-                Upload custom audio files on the left panel to build your soundboard library.
+                {t("soundboardEmptyDesc")}
               </p>
             </div>
           ) : (

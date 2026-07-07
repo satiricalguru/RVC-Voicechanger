@@ -21,17 +21,15 @@ export const metadata: Metadata = {
     "A modern, monochrome real-time voice changer. Drop in a .pth + .index and go live with AI voice conversion.",
   generator: "v0.app",
 }
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`dark bg-black ${geistSans.variable} ${geistMono.variable}`}>
-      <body className="font-sans antialiased bg-black text-white">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="font-sans antialiased bg-background text-foreground">
         {children}
-
       </body>
     </html>
   )
