@@ -23,6 +23,8 @@
 
 *   **Real-time AI Voice Conversion:** Highly optimized local RVC pipeline utilizing PyTorch, ONNX, and torchfcpe for pitch extraction.
 *   **Integrated DSP Pedalboard:** Embedded real-time noise gate, highpass filter, compressor, pitch shifter, and reverb powered by Spotify's `pedalboard` library.
+*   **Multi-Language Settings (i18n):** Native support for English, 日本語 (Japanese), and 简体中文 (Chinese) covering the entire app layout and telemetry panels.
+*   **Light & Dark Themes:** Elegant theme toggle with polished, accessible layouts optimized for both dark glassmorphism and high-contrast light modes.
 *   **Automatic Web Image Scraper:** Automatically scans `.pth` and `.index` model names to scrape, cache, and display high-quality model avatars from DuckDuckGo and Wikipedia.
 *   **One-Click RVC Import:** Seamlessly import custom Applio voice models via a drag-and-drop local import interface.
 *   **Compact Model Manager:** Star your favorite models or delete custom presets directly from the grid.
