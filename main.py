@@ -442,7 +442,6 @@ async def websocket_endpoint(websocket: WebSocket):
     finally:
         active_connections.discard(websocket)
 
-
 def _shutdown(signum, frame):
     logger.info("Received signal %s, shutting down", signum)
     engine.stop()
@@ -451,6 +450,116 @@ def _shutdown(signum, frame):
 
 signal.signal(signal.SIGTERM, _shutdown)
 signal.signal(signal.SIGINT, _shutdown)
+
+
+import uuid
+
+soundboard_dir = Path("models/soundboard")
+soundboard_dir.mkdir(parents=True, exist_ok=True)
+metadata_file = soundboard_dir / "metadata.json"
+
+# Serve static audio files
+app.mount("/api/soundboard/file", StaticFiles(directory=str(soundboard_dir)), name="soundboard_files")
+
+def read_soundboard_metadata() -> list:
+    if not metadata_file.exists():
+        default_sounds = [
+            {
+                "id": "default_airhorn",
+                "name": "Airhorn",
+                "filename": "airhorn.mp3",
+                "url": "https://www.myinstants.com/media/sounds/mlg-airhorn.mp3"
+            },
+            {
+                "id": "default_vine_boom",
+                "name": "Vine Boom",
+                "filename": "vine-boom.mp3",
+                "url": "https://www.myinstants.com/media/sounds/vine-boom.mp3"
+            },
+            {
+                "id": "default_bruh",
+                "name": "Bruh",
+                "filename": "bruh.mp3",
+                "url": "https://www.myinstants.com/media/sounds/bruh.mp3"
+            },
+            {
+                "id": "default_sad_trombone",
+                "name": "Sad Trombone",
+                "filename": "sad-trombone.mp3",
+                "url": "https://www.myinstants.com/media/sounds/sad-trombone.mp3"
+            }
+        ]
+        try:
+            with open(metadata_file, "w", encoding="utf-8") as f:
+                json.dump(default_sounds, f, indent=2)
+        except Exception as e:
+            logger.error("Failed to write initial soundboard metadata: %s", e)
+        return default_sounds
+    try:
+        with open(metadata_file, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+def write_soundboard_metadata(data: list):
+    try:
+        with open(metadata_file, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+    except Exception as e:
+        logger.error("Failed to write soundboard metadata: %s", e)
+
+@app.get("/api/soundboard")
+async def get_soundboard():
+    return JSONResponse(content=read_soundboard_metadata())
+
+@app.post("/api/soundboard/upload")
+async def upload_soundboard(
+    file: UploadFile = File(...),
+    name: str = Form(...),
+):
+    try:
+        file_ext = Path(file.filename).suffix or ".mp3"
+        sound_id = str(uuid.uuid4())
+        filename = f"{sound_id}{file_ext}"
+        dest_path = soundboard_dir / filename
+        
+        content = await file.read()
+        dest_path.write_bytes(content)
+        
+        metadata = read_soundboard_metadata()
+        new_sound = {
+            "id": sound_id,
+            "name": name,
+            "filename": filename,
+            "url": f"/api/soundboard/file/{filename}"
+        }
+        metadata.append(new_sound)
+        write_soundboard_metadata(metadata)
+        
+        return JSONResponse(content=metadata)
+    except Exception as exc:
+        logger.error("Soundboard upload error: %s", exc, exc_info=True)
+        return JSONResponse(content={"error": str(exc)}, status_code=500)
+
+@app.delete("/api/soundboard/{sound_id}")
+async def delete_soundboard(sound_id: str):
+    try:
+        metadata = read_soundboard_metadata()
+        updated_metadata = []
+        for sound in metadata:
+            if sound["id"] == sound_id:
+                filename = sound.get("filename")
+                if filename and not sound["id"].startswith("default_"):
+                    filepath = soundboard_dir / filename
+                    filepath.unlink(missing_ok=True)
+            else:
+                updated_metadata.append(sound)
+        
+        write_soundboard_metadata(updated_metadata)
+        return JSONResponse(content=updated_metadata)
+    except Exception as exc:
+        logger.error("Soundboard delete error: %s", exc, exc_info=True)
+        return JSONResponse(content={"error": str(exc)}, status_code=500)
 
 
 @app.get("/{path:path}")

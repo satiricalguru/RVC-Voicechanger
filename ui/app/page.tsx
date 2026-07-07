@@ -9,6 +9,7 @@ import { BottomBar } from "@/components/voice-changer/bottom-bar"
 import { UploadDialog } from "@/components/voice-changer/upload-dialog"
 import { SettingsView } from "@/components/voice-changer/settings-view"
 import { VoiceLabView } from "@/components/voice-changer/voicelab-view"
+import { SoundboardView } from "@/components/voice-changer/soundboard-view"
 import { Toaster } from "@/components/ui/sonner"
 import { toast } from "sonner"
 import {
@@ -20,6 +21,7 @@ import type {
   Voice,
   VoiceChangerConfig,
   AudioDevice,
+  SoundboardSound,
 } from "@/lib/voice-changer/types"
 import {
   fetchVoices,
@@ -31,6 +33,9 @@ import {
   deleteVoiceModel,
   uploadVoiceModelFile,
   importVoiceModelPaths,
+  fetchSoundboardSounds,
+  uploadSoundboardSound,
+  deleteSoundboardSound,
 } from "@/lib/voice-changer/backend-api"
 
 /**
@@ -66,6 +71,20 @@ export default function Page() {
     bufferSize: 512,
   })
 
+  const [sounds, setSounds] = useState<SoundboardSound[]>([])
+  const [apiBaseUrl, setApiBaseUrl] = useState("")
+
+  useEffect(() => {
+    getApiBaseUrl().then(setApiBaseUrl)
+  }, [])
+
+  const resolvedSounds = useMemo(() => {
+    return sounds.map((s) => ({
+      ...s,
+      url: s.url.startsWith("http") ? s.url : `${apiBaseUrl}${s.url}`,
+    }))
+  }, [sounds, apiBaseUrl])
+
   /* ── Derived ──────────────────────────────────────────────────────────── */
   const filteredVoices = useMemo(() => {
     if (category === "All") return voices
@@ -88,16 +107,20 @@ export default function Page() {
 
   const refreshData = useCallback(async () => {
     try {
-      const [v, d, c] = await Promise.all([fetchVoices(), fetchDevices(), fetchConfig()])
+      const [v, d, c, s] = await Promise.all([
+        fetchVoices(),
+        fetchDevices(),
+        fetchConfig(),
+        fetchSoundboardSounds(),
+      ])
       if (v && v.length > 0) setVoices(v)
       if (d && d.length > 0) {
         setInputDevices(d.filter((dev) => dev.channels > 0))
         setOutputDevices(d.filter((dev) => dev.channels > 0))
         setMonitorDevices(d.filter((dev) => dev.channels > 0))
       }
-      // Merge — never replace — so frontend-only fields (inputVolume, outputVolume,
-      // monitorMix, monitorDeviceIndex) always fall back to DEFAULT_CONFIG values.
       if (c) setConfig((prev) => ({ ...prev, ...c }))
+      if (s) setSounds(s)
     } catch (err) {
       console.error("Failed to fetch initial data", err)
     }
@@ -239,7 +262,16 @@ export default function Page() {
     }
   }
 
-  /* ── Hotkeys ──────────────────────────────────────────────────────────── */
+  const handleUploadSound = async (file: File, name: string) => {
+    const updated = await uploadSoundboardSound(file, name)
+    setSounds(updated)
+  }
+
+  const handleDeleteSound = async (id: string) => {
+    const updated = await deleteSoundboardSound(id)
+    setSounds(updated)
+  }
+
   // Use refs so the keydown handler always sees fresh state without re-registering
   const filteredVoicesRef = useRef(filteredVoices)
   filteredVoicesRef.current = filteredVoices
@@ -323,6 +355,13 @@ export default function Page() {
               config={config}
               onChange={updateConfig}
               onPreview={togglePower}
+            />
+          )}
+          {view === "soundboard" && (
+            <SoundboardView
+              sounds={resolvedSounds}
+              onUpload={handleUploadSound}
+              onDelete={handleDeleteSound}
             />
           )}
           {view === "settings" && (

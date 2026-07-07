@@ -1,10 +1,7 @@
 /**
  * backend-api.ts — helper for communication with the Python FastAPI backend.
  */
-
-import { Voice, AudioDevice, VoiceChangerConfig, EngineStatus } from "./types";
-
-
+import { Voice, AudioDevice, VoiceChangerConfig, EngineStatus, SoundboardSound } from "./types";
 let backendPort: number | null = null;
 
 async function getBaseUrl(): Promise<string> {
@@ -312,4 +309,45 @@ function mapFrontendToBackend(patch: any): any {
     result[mappedKey] = patch[key];
   }
   return result;
+}
+
+export async function fetchSoundboardSounds(): Promise<SoundboardSound[]> {
+  try {
+    const base = await getBaseUrl();
+    const res = await fetch(`${base}/api/soundboard`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.error("fetchSoundboardSounds error:", e);
+    return [];
+  }
+}
+
+export async function uploadSoundboardSound(file: File, name: string): Promise<SoundboardSound[]> {
+  const base = await getBaseUrl();
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("name", name);
+
+  const res = await fetch(`${base}/api/soundboard/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+export async function deleteSoundboardSound(id: string): Promise<SoundboardSound[]> {
+  const base = await getBaseUrl();
+  const res = await fetch(`${base}/api/soundboard/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP ${res.status}`);
+  }
+  return await res.json();
 }

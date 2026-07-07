@@ -1,10 +1,10 @@
 "use client"
 
-import { Mic, SlidersHorizontal, Settings2, Star, User2, Layers, Cpu, Zap, Plus, AudioWaveformIcon as Waveform } from 'lucide-react'
+import { Mic, SlidersHorizontal, Volume2, Settings2, Star, User2, Layers, Cpu, Zap, Plus, AudioWaveformIcon as Waveform } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import type { EngineMode } from "@/lib/voice-changer/types"
 
-export type AppView = "voicebox" | "voicelab" | "settings"
+export type AppView = "voicebox" | "voicelab" | "soundboard" | "settings"
 
 interface SidebarProps {
   currentView: AppView
@@ -22,6 +22,7 @@ interface SidebarProps {
 const NAV: { id: AppView; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "voicebox", label: "Voicebox", icon: Mic },
   { id: "voicelab", label: "VoiceLab", icon: SlidersHorizontal },
+  { id: "soundboard", label: "Soundboard", icon: Volume2 },
   { id: "settings", label: "Settings", icon: Settings2 },
 ]
 

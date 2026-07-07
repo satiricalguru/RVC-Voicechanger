@@ -76,3 +76,10 @@ export interface VoiceChangerConfig {
   // Selected voice
   selectedVoiceId: string
 }
+
+export interface SoundboardSound {
+  id: string
+  name: string
+  filename: string
+  url: string
+}
