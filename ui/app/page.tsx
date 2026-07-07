@@ -159,6 +159,16 @@ export default function Page() {
             fetchVoices().then(setVoices)
           } else if (data.type === "voice_selected") {
             setStatus((s) => ({ ...s, loadedVoiceId: data.voice_id }))
+          } else if (data.type === "rmvpe_downloaded") {
+            if (data.ok) {
+              toast.success("RMVPE weights downloaded!", {
+                description: "The RMVPE model is ready for accurate F0 estimation.",
+              })
+            } else {
+              toast.error("RMVPE download failed", {
+                description: data.error ?? "Check internet connection and try again.",
+              })
+            }
           }
         },
         // onReconnect: keep wsRef pointing at the live socket after reconnects
@@ -398,8 +408,18 @@ export default function Page() {
               onRescanDevices={refreshData}
               onDownloadRmvpe={async () => {
                 const base = await getApiBaseUrl()
-                fetch(`${base}/api/download-rmvpe`, { method: "POST" })
-                toast("Downloading RMVPE weights…")
+                const promise = fetch(`${base}/api/download-rmvpe`, { method: "POST" })
+                  .then((r) => r.json())
+                  .then((data) => {
+                    if (!data.ok) throw new Error(data.error || "Download failed")
+                    // Actual completion comes via WS broadcast (rmvpe_downloaded)
+                    return "Download started in background…"
+                  })
+                toast.promise(promise, {
+                  loading: "Starting RMVPE weight download…",
+                  success: "RMVPE download started! Will notify when complete.",
+                  error: (e) => `Download failed: ${e.message}`,
+                })
               }}
             />
           )}

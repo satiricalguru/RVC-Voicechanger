@@ -276,8 +276,18 @@ async def delete_model(voice_id: str):
 
 @app.post("/api/download-rmvpe")
 async def download_rmvpe():
+    loop = asyncio.get_event_loop()
+
     def _background():
-        rvc.download_rmvpe()
+        try:
+            rvc.download_rmvpe()
+            asyncio.run_coroutine_threadsafe(
+                broadcast({"type": "rmvpe_downloaded", "ok": True}), loop
+            )
+        except Exception as exc:
+            asyncio.run_coroutine_threadsafe(
+                broadcast({"type": "rmvpe_downloaded", "ok": False, "error": str(exc)}), loop
+            )
 
     threading.Thread(target=_background, daemon=True).start()
     return JSONResponse(content={"ok": True})
