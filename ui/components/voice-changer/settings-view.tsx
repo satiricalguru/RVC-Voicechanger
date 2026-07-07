@@ -341,7 +341,7 @@ function DeviceField({
         <SelectTrigger className="h-9 border-white/10 bg-white/[0.02] text-sm text-white hover:border-white/30 focus:ring-0">
           <SelectValue placeholder="System default" />
         </SelectTrigger>
-        <SelectContent className="border-white/10 bg-zinc-950 text-white">
+        <SelectContent className="border-border">
           <SelectItem value="default" className="text-xs">
             System Default
           </SelectItem>
@@ -375,7 +375,7 @@ function SelectField({
         <SelectTrigger className="h-9 border-white/10 bg-white/[0.02] text-sm text-white hover:border-white/30 focus:ring-0">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent className="border-white/10 bg-zinc-950 text-white">
+        <SelectContent className="border-border">
           {options.map((o) => (
             <SelectItem key={o.value} value={o.value} className="text-xs">
               {o.label}

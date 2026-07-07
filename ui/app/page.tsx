@@ -78,19 +78,25 @@ export default function Page() {
   }, [])
 
   useEffect(() => {
-    const root = window.document.documentElement
+    const html = window.document.documentElement
+    const body = window.document.body
     if (config.theme === "light") {
-      root.classList.remove("dark")
-      root.classList.add("light")
-      root.style.backgroundColor = "#ffffff"
-      root.style.color = "#121212"
+      html.classList.remove("dark")
+      html.classList.add("light")
+      body.classList.remove("dark")
+      body.classList.add("light")
+      html.style.backgroundColor = "#ffffff"
+      html.style.color = "#121212"
     } else {
-      root.classList.remove("light")
-      root.classList.add("dark")
-      root.style.backgroundColor = "#000000"
-      root.style.color = "#ffffff"
+      html.classList.remove("light")
+      html.classList.add("dark")
+      body.classList.remove("light")
+      body.classList.add("dark")
+      html.style.backgroundColor = "#000000"
+      html.style.color = "#ffffff"
     }
   }, [config.theme])
+
   const resolvedSounds = useMemo(() => {
     return sounds.map((s) => ({
       ...s,

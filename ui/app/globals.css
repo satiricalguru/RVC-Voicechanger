@@ -151,105 +151,98 @@
     @apply bg-background text-foreground;
   }
 }
-
 /* Light mode overrides for hardcoded bg-black, text-white, and dark overlays */
-html.light,
-html.light body,
-html.light .bg-black,
-html.light .bg-black\/30,
-html.light .bg-black\/40,
-html.light .bg-white\/\[0\.02\],
-html.light .bg-white\/\[0\.01\],
-html.light .bg-white\/\[0\.03\],
-html.light .bg-white\/\[0\.04\],
-html.light .bg-white\/\[0\.06\],
-html.light aside,
-html.light footer,
-html.light header {
-  background-color: #ffffff !important;
-  color: #121212 !important;
+.light,
+.light .bg-black,
+.light aside,
+.light footer,
+.light header,
+.light .bg-black\/30 {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
 }
 
-html.light .text-white,
-html.light .text-white\/90,
-html.light .text-white\/85,
-html.light .text-white\/80,
-html.light .text-white\/70,
-html.light .text-white\/60,
-html.light .text-white\/55,
-html.light .text-white\/45,
-html.light .text-white\/40,
-html.light .text-white\/30,
-html.light .text-muted-foreground,
-html.light button,
-html.light input,
-html.light select,
-html.light h1,
-html.light h2,
-html.light h3,
-html.light span,
-html.light label {
-  color: #121212 !important;
+.light .bg-white\/\[0\.02\],
+.light .bg-white\/\[0\.01\],
+.light .bg-white\/\[0\.03\],
+.light .bg-white\/\[0\.04\],
+.light .bg-white\/\[0\.06\] {
+  background-color: var(--card) !important;
 }
 
-html.light .text-white\/60,
-html.light .text-white\/55,
-html.light .text-white\/45,
-html.light .text-white\/40,
-html.light .text-white\/30 {
-  color: #5f6368 !important;
+.light .text-white,
+.light .text-white\/90,
+.light .text-white\/85,
+.light .text-white\/80,
+.light .text-white\/70,
+.light .text-white\/60,
+.light .text-white\/55,
+.light .text-white\/45,
+.light .text-white\/40,
+.light .text-white\/30,
+.light .text-muted-foreground {
+  color: var(--foreground) !important;
 }
 
-html.light .border-white\/10,
-html.light .border-white\/15,
-html.light .border-white\/5,
-html.light .border-white\/20,
-html.light .border-border,
-html.light .border-dashed,
-html.light border-r,
-html.light border-l,
-html.light border-t,
-html.light border-b {
-  border-color: #cbd5e1 !important;
+.light .text-white\/60,
+.light .text-white\/55,
+.light .text-white\/45,
+.light .text-white\/40,
+.light .text-white\/30 {
+  color: var(--muted-foreground) !important;
 }
 
-html.light .hover\:bg-white\/5:hover,
-html.light .hover\:bg-white\/\[0\.03\]:hover,
-html.light .hover\:bg-white\/\[0\.04\]:hover,
-html.light .bg-white\/5 {
-  background-color: #f1f5f9 !important;
+.light .border-white\/10,
+.light .border-white\/15,
+.light .border-white\/5,
+.light .border-white\/20,
+.light .border-border,
+.light .border-dashed {
+  border-color: var(--border) !important;
 }
 
-html.light .bg-white\/10 {
-  background-color: #e2e8f0 !important;
+.light .hover\:bg-white\/5:hover,
+.light .hover\:bg-white\/\[0\.03\]:hover,
+.light .hover\:bg-white\/\[0\.04\]:hover,
+.light .bg-white\/5 {
+  background-color: var(--accent) !important;
 }
 
-html.light .bg-white {
-  background-color: #0f172a !important;
-  color: #ffffff !important;
+.light .bg-white\/10 {
+  background-color: var(--secondary) !important;
 }
 
-html.light .text-black {
-  color: #ffffff !important;
+/* Invert active states so they stay high contrast dark/black background with white text */
+.light .bg-white {
+  background-color: oklch(0.205 0 0) !important;
+  color: oklch(0.985 0 0) !important;
 }
 
-html.light input,
-html.light select {
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
+.light .text-black {
+  color: oklch(0.985 0 0) !important;
+}
+
+.light .text-black\/50 {
+  color: oklch(0.985 0 0 / 60%) !important;
+}
+
+.light .bg-white\/\[0\.02\] input,
+.light .bg-white\/\[0\.02\] select,
+.light input,
+.light select {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
 }
 
 /* Adjust switch colors in light mode */
-html.light .bg-white\/10[data-state=unchecked] {
-  background-color: #cbd5e1 !important;
+.light .bg-white\/10[data-state=unchecked] {
+  background-color: var(--muted) !important;
 }
 
-html.light .data-\[state\=checked\]\:bg-white[data-state=checked] {
-  background-color: #0f172a !important;
+.light .data-\[state\=checked\]\:bg-white[data-state=checked] {
+  background-color: oklch(0.205 0 0) !important;
 }
 
-html.light .\[\&\_\[data-slot\=switch-thumb\]\]\:bg-black [data-slot=switch-thumb] {
-  background-color: #ffffff !important;
+.light .\[\&\_\[data-slot\=switch-thumb\]\]\:bg-black [data-slot=switch-thumb] {
+  background-color: var(--background) !important;
 }
-
