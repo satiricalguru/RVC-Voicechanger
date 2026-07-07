@@ -98,6 +98,19 @@ export const TRANSLATIONS = {
     openSettings: "Open settings",
     muteMaster: "Mute master",
     language: "Language",
+
+    // Inspector panel
+    liveVoice: "Live Voice",
+    voiceTuning: "Voice Tuning",
+    pitch: "Pitch",
+    indexStrength: "Index Strength",
+    protect: "Protect",
+    reverb: "Reverb",
+    noiseGate: "Noise Gate",
+    compressor: "Compressor",
+    modelLoaded: "Model loaded",
+    loadingModel: "Loading model…",
+    noModelLoaded: "No model loaded",
   },
   ja: {
     // Sidebar
@@ -196,6 +209,19 @@ export const TRANSLATIONS = {
     openSettings: "設定を開く",
     muteMaster: "マスターをミュート",
     language: "言語",
+
+    // Inspector panel
+    liveVoice: "ライブボイス",
+    voiceTuning: "ボイスチューニング",
+    pitch: "ピッチ",
+    indexStrength: "インデックス強度",
+    protect: "プロテクト",
+    reverb: "リバーブ",
+    noiseGate: "ノイズゲート",
+    compressor: "コンプレッサー",
+    modelLoaded: "モデル読み込み済み",
+    loadingModel: "モデル読み込み中…",
+    noModelLoaded: "モデル未読み込み",
   },
   zh: {
     // Sidebar
@@ -294,6 +320,19 @@ export const TRANSLATIONS = {
     openSettings: "打开设置",
     muteMaster: "静音主音量",
     language: "语言设定",
+
+    // Inspector panel
+    liveVoice: "实时声音",
+    voiceTuning: "声音调整",
+    pitch: "音调",
+    indexStrength: "索引强度",
+    protect: "保护值",
+    reverb: "混响",
+    noiseGate: "噪声门",
+    compressor: "压缩器",
+    modelLoaded: "模型已加载",
+    loadingModel: "正在加载模型…",
+    noModelLoaded: "未加载模型",
   },
 }
 

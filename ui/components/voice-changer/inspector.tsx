@@ -5,22 +5,27 @@ import { Activity, AlertTriangle, CheckCircle2, Loader2, Volume2, Mic } from "lu
 import { cn } from "@/lib/utils"
 import type { Voice, VoiceChangerConfig, EngineStatus } from "@/lib/voice-changer/types"
 import { VoiceAvatar } from "./voice-avatar"
+import { TRANSLATIONS } from "@/lib/voice-changer/translations"
 
 interface InspectorProps {
   selectedVoice: Voice | null
   status: EngineStatus
   config: VoiceChangerConfig
   onChange: (patch: Partial<VoiceChangerConfig>) => void
+  language?: string
 }
 
-export function Inspector({ selectedVoice, status, config, onChange }: InspectorProps) {
+export function Inspector({ selectedVoice, status, config, onChange, language = "en" }: InspectorProps) {
+  const t = (key: keyof typeof TRANSLATIONS.en) =>
+    TRANSLATIONS[language as keyof typeof TRANSLATIONS]?.[key] ?? TRANSLATIONS.en[key] ?? String(key)
+
   const loadState = status.voiceLoadError
     ? { icon: AlertTriangle, label: status.voiceLoadError, tone: "warn" as const }
     : status.loadingVoiceId
-      ? { icon: Loader2, label: "Loading model…", tone: "info" as const, spin: true }
+      ? { icon: Loader2, label: t("loadingModel"), tone: "info" as const, spin: true }
       : status.loadedVoiceId
-        ? { icon: CheckCircle2, label: "Model loaded", tone: "ok" as const }
-        : { icon: Activity, label: "No model loaded", tone: "muted" as const }
+        ? { icon: CheckCircle2, label: t("modelLoaded"), tone: "ok" as const }
+        : { icon: Activity, label: t("noModelLoaded"), tone: "muted" as const }
 
   return (
     <aside className="flex h-full w-[320px] shrink-0 flex-col gap-3 border-l border-white/10 bg-black p-3">
@@ -28,7 +33,7 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
       <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
         <div className="mb-3 flex items-center justify-between">
           <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
-            Live Voice
+            {t("liveVoice")}
           </span>
           <div className="flex items-center gap-1.5">
             <span
@@ -38,7 +43,7 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
               )}
             />
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/60">
-              {status.isRunning ? "Live" : "Idle"}
+              {status.isRunning ? t("live") : t("idle")}
             </span>
           </div>
         </div>
@@ -79,9 +84,9 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
 
       {/* Voice tuning */}
       <div className="flex-1 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.02] p-4">
-        <SectionHeader>Voice Tuning</SectionHeader>
+        <SectionHeader>{t("voiceTuning")}</SectionHeader>
         <SliderRow
-          label="Pitch"
+          label={t("pitch")}
           unit="st"
           format={(v) => (v > 0 ? `+${v}` : `${v}`)}
           value={config.pitchSemitones}
@@ -91,7 +96,7 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
           onChange={(v) => onChange({ pitchSemitones: v })}
         />
         <SliderRow
-          label="Index Strength"
+          label={t("indexStrength")}
           value={config.indexRate}
           min={0}
           max={1}
@@ -100,7 +105,7 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
           onChange={(v) => onChange({ indexRate: v })}
         />
         <SliderRow
-          label="Protect"
+          label={t("protect")}
           value={config.protect}
           min={0}
           max={0.5}
@@ -109,7 +114,7 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
           onChange={(v) => onChange({ protect: v })}
         />
         <SliderRow
-          label="Reverb"
+          label={t("reverb")}
           value={config.reverb}
           min={0}
           max={1}
@@ -118,7 +123,7 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
           onChange={(v) => onChange({ reverb: v })}
         />
         <SliderRow
-          label="Noise Gate"
+          label={t("noiseGate")}
           unit="dB"
           value={config.noiseGateDb}
           min={-90}
@@ -128,7 +133,7 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
           onChange={(v) => onChange({ noiseGateDb: v })}
         />
         <SliderRow
-          label="Compressor"
+          label={t("compressor")}
           unit="x"
           value={config.compressorRatio}
           min={1}
@@ -139,10 +144,10 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
         />
 
         <div className="mt-5">
-          <SectionHeader>Levels</SectionHeader>
+          <SectionHeader>{t("levels")}</SectionHeader>
           <SliderRow
             icon={Mic}
-            label="Input Volume"
+            label={t("inputVolume")}
             unit="%"
             value={config.inputVolume}
             min={0}
@@ -153,7 +158,7 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
           />
           <SliderRow
             icon={Volume2}
-            label="Output Volume"
+            label={t("outputVolume")}
             unit="%"
             value={config.outputVolume}
             min={0}
@@ -163,7 +168,7 @@ export function Inspector({ selectedVoice, status, config, onChange }: Inspector
             onChange={(v) => onChange({ outputVolume: v })}
           />
           <SliderRow
-            label="Monitor Mix"
+            label={t("monitorMix")}
             unit="%"
             value={config.monitorMix}
             min={0}

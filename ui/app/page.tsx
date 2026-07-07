@@ -409,6 +409,7 @@ export default function Page() {
           status={status}
           config={config}
           onChange={updateConfig}
+          language={config.language}
         />
       </div>
 
